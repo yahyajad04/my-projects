@@ -1,5 +1,5 @@
 # embedded project
-tthis project i did using mplab on PIC16F877A
+This project i did using mplab on PIC16F877A
 
 the project simulates a game of escape the room that have 3 challenges you have to win all of the three challenges to win
 it waits for the user to press the start button to start the game.
