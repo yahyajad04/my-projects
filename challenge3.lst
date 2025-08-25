@@ -1,0 +1,1029 @@
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 #include <p16f877a.inc>
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC16F877A processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2013 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00566         LIST
+Warning[205]: Found directive in column 1. (__CONFIG)
+2007   3F3A           00002 __CONFIG _FOSC_HS & _WDTE_OFF & _PWRTE_OFF & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _WRT_OFF & _CP_OFF
+                      00003 
+Warning[205]: Found directive in column 1. (CBLOCK)
+                      00004 CBLOCK 0x20
+  00000020            00005     countdown       ; countdown from 9
+  00000021            00006     current_answer  ; correct answer for problem
+  00000022            00007     problem_index   ; selected problem index (0-4)
+  00000023            00008     switch_input    ; player answer
+  00000024            00009     delay1, delay2  ; delay temps
+Warning[205]: Found directive in column 1. (ENDC)
+                      00010 ENDC
+                      00011 
+                      00012 
+Warning[205]: Found directive in column 1. (ORG)
+                      00013 ORG 0x00
+Error[113]  : Symbol not previously defined (MAIN)
+0000   2800           00014     GOTO MAIN
+Warning[205]: Found directive in column 1. (ORG)
+                      00015 ORG 0x04
+0004   2???           00016     GOTO ISR
+                      00017 
+0005                  00018 INITIAL3
+                      00019 ;Setting ADCON1 to have all DIGITAL pins
+0005   1683 1303      00020     BANKSEL ADCON1
+0007   3006           00021     MOVLW 0x06
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0008   009F           00022     MOVWF ADCON1
+                      00023 
+0009   1683 1303      00024         banksel TRISA
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000B   0185           00025     CLRF TRISA          ;PORTA all OUTPUT
+000C   30FF           00026     MOVLW 0xFF
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000D   0086           00027     MOVWF TRISB         ;TRISB all INPUT
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000E   0187           00028     CLRF TRISC          ;PORTC all OUTPUT
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000F   0188           00029     CLRF TRISD          ;PORTD all OUTPUT
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0010   0189           00030     CLRF TRISE          ;PORTE all OUTPUT
+                      00031 
+                      00032 
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0011   1283 1303      00033     BANKSEL PORTA
+0013   0185           00034     CLRF PORTA
+0014   0186           00035     CLRF PORTB
+0015   0187           00036     CLRF PORTC
+0016   0188           00037     CLRF PORTD
+0017   0189           00038     CLRF PORTE
+                      00039 
+                      00040 ;Initializing the LCD and Timer 0       
+0018   2???           00041     CALL LCD_INIT
+0019   2???           00042     CALL LCD_WELCOME
+001A   2???           00043     CALL TIMER0_INIT
+                      00044     
+001B                  00045 MAIN_LOOP
+                      00046 ;Waiting for the button to be pressed
+001B   1806           00047     BTFSC PORTB , 0     
+001C   2???           00048     GOTO $-1           
+001D   2???           00049     GOTO START_CHALLENGE
+                      00050         
+001E                  00051 START_CHALLENGE
+                      00052 ;after pressing the button it willcome here
+001E   2???           00053         CALL TIMER1_INIT
+                      00054         
+                      00055 ;Initializing the timer that will show on the 7 segment Display
+001F   300A           00056         MOVLW .10
+0020   00A0           00057     MOVWF countdown
+0021   2???           00058     CALL SHOW_TIME
+                      00059 
+0022   2???           00060     CALL RANDOM_PROBLEM         ;choosing the problem index randomly
+0023   2???           00061     CALL LOAD_ANSWER            ;getting the real answer
+0024   00A1           00062     movwf current_answer
+                      00063     
+0025   2???           00064     CALL LCD_CLEAR                      ; clearing LCD
+0026   2???           00065     CALL DELAY_20MS
+0027   2???           00066     CALL SHOW_PROBLEM           ;putting the problem chosen on the LCD
+                      00067     
+0028                  00068 WAIT_LOOP
+                      00069 ;this is to wait until the player gives his answer by pressing the 
+                      00070 ;finish button or the Timer gets to 0
+0028   1C86           00071     BTFSS PORTB , 1
+0029   2???           00072     GOTO CHECK_INPUT
+002A   3001           00073     movlw 1                                     ;subtracted 1 not 0 because the real value of the countd
+                            own is 10 not 9
+002B   0220           00074     subwf countdown , w
+002C   1903           00075     BTFSC STATUS, Z
+002D   2???           00076     GOTO WRONG
+002E   2???           00077     GOTO WAIT_LOOP
+                      00078 
+002F                  00079 CHECK_INPUT
+                      00080 ;this gets executed if the finish button got pressed , it checks the value entered
+                      00081 ;by the user and put it in the switch_input variable and compare it with the real value
+                      00082 ;stored in the current_answer variable
+002F   0806           00083     MOVF PORTB, W
+0030   39F0           00084     ANDLW 0xF0
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0031   00A3           00085     MOVWF switch_input
+0032   0EA3           00086     swapf switch_input , F
+                      00087 
+0033   0821           00088     MOVF current_answer, W
+0034   0223           00089     SUBWF switch_input, W
+0035   1D03           00090     BTFSS STATUS, Z
+0036   2???           00091     GOTO WRONG
+                      00092 
+                      00093 ;comes here if the answer is true
+                      00094 
+                      00095 ;stopping timer 1 so the timer do not keep counting after the finish button is pressed  
+0037   1283 1303      00096         BANKSEL T1CON
+0039   1010           00097     BCF T1CON, TMR1ON
+                      00098 ;lighting the green LEDS 
+003A   1409           00099     BSF PORTE , 0
+003B   1489           00100     BSF PORTE , 1
+003C   1509           00101     BSF PORTE , 2
+003D   2???           00102     CALL LCD_CLEAR
+003E   2???           00103     CALL DELAY_20MS
+                      00104 ;showing the "YOU WIN! ESCAPE" string on the LCD
+003F   2???           00105     CALL LCD_YOUWIN
+0040   2???           00106     CALL DELAY_15SEC
+0041   2???           00107     GOTO END_CHALLENGE
+                      00108 
+                      00109 
+0042                  00110 WRONG
+                      00111 ;stopping timer 1 so the timer do not keep counting after the finish button is pressed  
+0042   1283 1303      00112         BANKSEL T1CON
+0044   1010           00113     BCF T1CON, TMR1ON
+                      00114     
+0045   2???           00115         CALL LCD_CLEAR
+0046   2???           00116         call DELAY_20MS
+                      00117 ;showing the "HARD LUCK" string on the LCD
+0047   2???           00118     CALL LCD_HARDLUCK
+0048   2???           00119         CALL DELAY_15SEC
+0049   2???           00120     goto END_CHALLENGE
+                      00121 
+004A                  00122 END_CHALLENGE
+                      00123 ;turning off the green LEDS
+004A   1009           00124     BCF PORTE , 0
+004B   1089           00125     BCF PORTE , 1
+004C   1109           00126     BCF PORTE , 2
+004D   2???           00127         CALL LCD_CLEAR
+004E   2???           00128     CALL DELAY_20MS
+                      00129 ;showing the welcome string again and going to the main loop so the user
+                      00130 ; can restart the challenge
+004F   2???           00131     CALL LCD_WELCOME
+0050   0187           00132     CLRF PORTC
+0051   2???           00133     goto MAIN_LOOP
+                      00134 
+0052                  00135 ISR
+                      00136 ;clearing the timer 0 interrupt flag
+0052   1283 1303      00137          BANKSEL INTCON
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0054   190B           00138      BTFSC INTCON, T0IF
+0055   110B           00139      BCF INTCON , T0IF
+                      00140 
+                      00141 ;this is to make the countdown decrement every second if the timer1 overflowed  
+0056   1283 1303      00142     BANKSEL PIR1
+0058   1C0C           00143     BTFSS PIR1, TMR1IF
+0059   0009           00144     RETFIE
+005A   100C           00145     BCF PIR1, TMR1IF
+005B   0820           00146     movf countdown , w
+005C   0BA0           00147         DECFSZ countdown , F
+005D   2???           00148         goto SHOW
+                      00149         
+                      00150 ;here we stop timer1 because we dont want it to keep giving interrupts while the 
+                      00151 ;countdown is already 0 and the challenge ended
+005E   1283 1303      00152         BANKSEL T1CON
+0060   1010           00153     BCF T1CON, TMR1ON    ; Stop Timer1
+0061   1683 1303      00154     BANKSEL PIE1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0063   100C           00155     BCF PIE1, TMR1IE     ; Disable Timer1 interrupt
+0064   0009           00156     RETFIE
+0065                  00157 SHOW
+0065   2???           00158     CALL SHOW_TIME
+0066   0009           00159     RETFIE
+                      00160     
+0067                  00161 SHOW_PROBLEM
+                      00162 ;chooses the problem from the problem_index value
+0067   0822           00163     MOVF problem_index, W
+0068   0782           00164     ADDWF PCL, F
+0069   2???           00165     GOTO PROB0
+006A   2???           00166     GOTO PROB1
+006B   2???           00167     GOTO PROB2
+006C   2???           00168     GOTO PROB3
+006D   2???           00169     GOTO PROB4
+                      00170     
+006E                  00171 countlookup
+                      00172 ;chooses which value will be on the 7 segment from the countdown value
+006E   0820           00173         MOVF countdown , W
+006F   0782           00174         ADDWF PCL , F
+0070   0000           00175         nop
+0071   34C0           00176         RETLW b'11000000'
+0072   34F9           00177         RETLW b'11111001'
+0073   34A4           00178         RETLW B'10100100'
+0074   34B0           00179         RETLW B'10110000'
+0075   3499           00180         RETLW B'10011001'
+0076   3492           00181         RETLW B'10010010'
+0077   3482           00182         RETLW B'10000010'
+0078   34F8           00183         RETLW B'11111000'
+0079   3480           00184         RETLW B'10000000'
+007A   3490           00185         RETLW B'10010000'
+                      00186         
+                      00187         
+007B                  00188 LOAD_ANSWER
+                      00189 ;chooses the real answer of the problem using the problem_index
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+007B   0822           00190     MOVF problem_index, W
+007C   0782           00191     ADDWF PCL, F
+007D   3408           00192     RETLW .8 ; 5+3
+007E   3407           00193     RETLW .7 ; 9-2
+007F   3408           00194     RETLW .8 ; 4x2
+0080   3404           00195     RETLW .4 ; 8/2
+0081   340D           00196     RETLW .13 ; 6+7
+                      00197     
+                      00198     
+                      00199     
+0082                  00200 TIMER0_INIT
+                      00201 ;initializing timer 0
+0082   1683 1303      00202          BANKSEL OPTION_REG
+0084   3007           00203          MOVLW b'00000111'    ; Prescaler 1:256
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0085   0081           00204          MOVWF OPTION_REG
+                      00205          
+0086   1283 1303      00206          BANKSEL INTCON
+0088   168B           00207          BSF INTCON, T0IE     ; Enable Timer0 interrupt
+0089   110B           00208          BCF INTCON, T0IF     ; Clear Timer0 interrupt flag
+008A   178B           00209          BSF INTCON, GIE      ; Global interrupt enable
+008B   0008           00210          RETURN  
+                      00211          
+008C                  00212 RANDOM_PROBLEM
+                      00213 ;this routine takes the value stored in TMR0 register after timer 0 was started
+                      00214 ;and AND it with 0000 0111 so we get the index to be from 0-7 then it checks if 
+                      00215 ; bit 2 is 1 then it subtracts 3 from the value else it will keep the value as it is
+                      00216 ;like that we will assure the index is from (0-4)
+008C   0801           00217         MOVF TMR0, W
+008D   3907           00218     ANDLW 0x07
+008E   00A2           00219     MOVWF problem_index
+008F   3003           00220     movlw 3
+0090   1922           00221     btfsc problem_index , 2
+0091   02A2           00222     subwf problem_index , F 
+0092   1283 1303      00223     BANKSEL INTCON
+0094   128B           00224     BCF INTCON, T0IE            ;turning timer 0 off because we dont need it anymore
+0095   0008           00225     RETURN
+                      00226     
+0096                  00227 TIMER1_INIT
+                      00228 ;Initializing timer 1
+0096   1283 1303      00229     BANKSEL T1CON
+0098   3021           00230     MOVLW b'00100001' ; Enable Timer1, 1:4 prescaler
+0099   0090           00231     MOVWF T1CON
+                      00232     
+009A   1283 1303      00233     BANKSEL PIR1
+009C   100C           00234     BCF PIR1, TMR1IF  ; Clear timer 1 flag
+009D   1683 1303      00235     BANKSEL PIE1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+009F   140C           00236     BSF PIE1, TMR1IE  ; Enable Timer1 interrupt
+00A0   1283 1303      00237     BANKSEL INTCON
+00A2   170B           00238     BSF INTCON, PEIE  ; Peripheral interrupt enable
+00A3   178B           00239     BSF INTCON, GIE   ; Global interrupt enable
+00A4   0008           00240     RETURN
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00241     
+                      00242     
+                      00243 ; ===== DELAYS =====
+                      00244 
+00A5                  00245 DELAY_5MS
+00A5   3032           00246     MOVLW D'50'
+00A6   00A5           00247     MOVWF delay2
+00A7                  00248 DL5_LOOP
+00A7   0000           00249     NOP
+00A8   0BA5           00250     DECFSZ delay2, F
+00A9   2???           00251     GOTO DL5_LOOP
+00AA   0008           00252     RETURN
+                      00253 
+00AB                  00254 DELAY_20MS
+00AB   2???           00255     CALL DELAY_5MS
+00AC   2???           00256     CALL DELAY_5MS
+00AD   2???           00257     CALL DELAY_5MS
+00AE   2???           00258     CALL DELAY_5MS
+00AF   0008           00259     RETURN
+                      00260 
+00B0                  00261 DELAY_1SEC
+00B0   30C8           00262     MOVLW D'200'
+00B1   00A4           00263     MOVWF delay1
+00B2                  00264 DL1_LOOP
+00B2   2???           00265     CALL DELAY_5MS
+00B3   0BA4           00266     DECFSZ delay1, F
+00B4   2???           00267     GOTO DL1_LOOP
+00B5   0008           00268     RETURN
+                      00269     
+00B6                  00270 DELAY_15SEC
+00B6   2???           00271         CALL DELAY_1SEC
+00B7   2???           00272         CALL DELAY_1SEC
+00B8   2???           00273         CALL DELAY_1SEC
+00B9   2???           00274         CALL DELAY_1SEC
+00BA   2???           00275         CALL DELAY_1SEC
+00BB   2???           00276         CALL DELAY_1SEC
+00BC   2???           00277         CALL DELAY_1SEC
+00BD   2???           00278         CALL DELAY_1SEC
+00BE   2???           00279         CALL DELAY_1SEC
+00BF   2???           00280         CALL DELAY_1SEC
+00C0   2???           00281         CALL DELAY_1SEC
+00C1   2???           00282         CALL DELAY_1SEC
+00C2   2???           00283         CALL DELAY_1SEC
+00C3   2???           00284         CALL DELAY_1SEC
+00C4   2???           00285         CALL DELAY_1SEC
+                      00286         
+                      00287 ; ===== LCD ROUTINES (8-bit) =====
+00C5                  00288 LCD_INIT
+                      00289 ;Initializing the LCD 
+00C5   2???           00290     CALL DELAY_1SEC     ; Wait for LCD power-on
+                      00291     
+                      00292 ; Function set: 8-bit, 2 line, 5x8 dots
+00C6   3038           00293     MOVLW 0x38
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00C7   2???           00294     CALL LCD_CMD
+                      00295 
+                      00296 ;setting the DISPLAY ON, CURSER ON , BLINKING OFF 
+00C8   300E           00297     MOVLW 0x0e
+00C9   2???           00298     CALL LCD_CMD
+                      00299     
+                      00300 ;Moving the CURSER TO POSITION 0,0
+00CA   3002           00301     MOVLW 0x02
+00CB   2???           00302     CALL LCD_CMD
+                      00303 
+                      00304     ; Clear display
+00CC   2???           00305     CALL LCD_CLEAR
+                      00306     
+00CD   0008           00307     RETURN
+                      00308     
+00CE                  00309 LCD_CMD
+                      00310 ;send command to the LCD
+00CE   0088           00311     movwf PORTD
+00CF   1085           00312     bcf PORTA, 1
+00D0   1585           00313     bsf PORTA, 3
+00D1   0000           00314     nop
+00D2   1185           00315     bcf PORTA, 3
+00D3   1105           00316     bcf PORTA, 2
+00D4   2???           00317     CALL DELAY_5MS
+00D5   0008           00318     return
+                      00319 
+00D6                  00320 LCD_DATA
+                      00321 ;send data to the LCD
+00D6   0088           00322     movwf PORTD
+00D7   1485           00323     bsf PORTA, 1
+00D8   1585           00324     bsf PORTA, 3
+00D9   0000           00325     nop
+00DA   1185           00326     bcf PORTA, 3
+00DB   1105           00327     bcf PORTA, 2
+00DC   2???           00328     CALL DELAY_5MS
+00DD   0008           00329     return                      
+                      00330 
+00DE                  00331 LCD_CLEAR
+                      00332 ;clear the LCD display
+00DE   3001           00333     MOVLW 0x01
+00DF   2???           00334     CALL LCD_CMD
+00E0   0008           00335     RETURN
+                      00336 
+00E1                  00337 SHOW_TIME
+                      00338 ;put the value of the countdown on PORTC so the 7-segment displays it
+00E1   2???           00339     call countlookup
+00E2   0087           00340     movwf PORTC
+00E3   2???           00341     call DELAY_20MS
+00E4   0008           00342     RETURN
+                      00343         
+00E5                  00344 LCD_WELCOME
+                      00345 ;sending the 'START' string to the LCD
+00E5   2???           00346     CALL LCD_CLEAR
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00E6   3080           00347     MOVLW 0x80          ; Set DDRAM address to 0x00 (start of line 1)
+00E7   2???           00348     CALL LCD_CMD
+00E8   2???           00349     call DELAY_20MS
+00E9   3053           00350     MOVLW 'S'
+00EA   2???           00351     CALL LCD_DATA
+00EB   3074           00352     MOVLW 't'
+00EC   2???           00353     CALL LCD_DATA
+00ED   3061           00354     MOVLW 'a'
+00EE   2???           00355     CALL LCD_DATA
+00EF   3072           00356     MOVLW 'r'
+00F0   2???           00357     CALL LCD_DATA
+00F1   3074           00358     MOVLW 't'
+00F2   2???           00359     CALL LCD_DATA
+00F3   0008           00360     RETURN
+                      00361 
+00F4                  00362 LCD_YOUWIN
+                      00363 ;sending the 'YOU WIN! ESCAPE' string to the LCD
+00F4   2???           00364     CALL LCD_CLEAR
+00F5   3080           00365     MOVLW 0x80      ; Set DDRAM address to 0x00 (start of line 1)
+00F6   2???           00366         CALL LCD_CMD
+00F7   2???           00367         call DELAY_20MS
+00F8   3059           00368     MOVLW 'Y'
+00F9   2???           00369     CALL LCD_DATA
+00FA   304F           00370     MOVLW 'O'
+00FB   2???           00371     CALL LCD_DATA
+00FC   3055           00372     MOVLW 'U'
+00FD   2???           00373     CALL LCD_DATA
+00FE   3020           00374     MOVLW ' '
+00FF   2???           00375     CALL LCD_DATA
+0100   3057           00376     MOVLW 'W'
+0101   2???           00377     CALL LCD_DATA
+0102   3049           00378     MOVLW 'I'
+0103   2???           00379     CALL LCD_DATA
+0104   304E           00380     MOVLW 'N'
+0105   2???           00381     CALL LCD_DATA
+0106   3021           00382     MOVLW '!'
+0107   2???           00383     CALL LCD_DATA
+0108   3020           00384     MOVLW ' '
+0109   2???           00385     CALL LCD_DATA
+010A   3045           00386     MOVLW 'E'
+010B   2???           00387     CALL LCD_DATA
+010C   3073           00388     MOVLW 's'
+010D   2???           00389     CALL LCD_DATA
+010E   3063           00390     MOVLW 'c'
+010F   2???           00391     CALL LCD_DATA
+0110   3061           00392     MOVLW 'a'
+0111   2???           00393     CALL LCD_DATA
+0112   3070           00394     MOVLW 'p'
+0113   2???           00395     CALL LCD_DATA
+0114   3065           00396     MOVLW 'e'
+0115   2???           00397     CALL LCD_DATA
+0116   0008           00398     RETURN
+                      00399 
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0117                  00400 LCD_HARDLUCK
+                      00401 ;sending the 'Hard luck' string to the LCD
+0117   2???           00402     CALL LCD_CLEAR
+0118   3080           00403         MOVLW 0x80      ; Set DDRAM address to 0x00 (start of line 1)
+0119   2???           00404         CALL LCD_CMD
+011A   2???           00405         call DELAY_20MS
+011B   3048           00406     MOVLW 'H'
+011C   2???           00407     CALL LCD_DATA
+011D   3061           00408     MOVLW 'a'
+011E   2???           00409     CALL LCD_DATA
+011F   3072           00410     MOVLW 'r'
+0120   2???           00411     CALL LCD_DATA
+0121   3064           00412     MOVLW 'd'
+0122   2???           00413     CALL LCD_DATA
+0123   3020           00414     MOVLW ' '
+0124   2???           00415     CALL LCD_DATA
+0125   306C           00416     MOVLW 'l'
+0126   2???           00417     CALL LCD_DATA
+0127   3075           00418     MOVLW 'u'
+0128   2???           00419     CALL LCD_DATA
+0129   3063           00420     MOVLW 'c'
+012A   2???           00421     CALL LCD_DATA
+012B   306B           00422     MOVLW 'k'
+012C   2???           00423     CALL LCD_DATA
+012D   0008           00424     RETURN
+                      00425 
+                      00426         
+012E                  00427 PROB0
+                      00428 ;problem 1 : 5 + 3 =
+012E   3080           00429         MOVLW 0x80      ; Set DDRAM address to 0x00 (start of line 1)
+012F   2???           00430         CALL LCD_CMD
+0130   2???           00431         call DELAY_20MS
+0131   3035           00432     MOVLW '5'
+0132   2???           00433     CALL LCD_DATA
+0133   302B           00434     MOVLW '+'
+0134   2???           00435     CALL LCD_DATA
+0135   3033           00436     MOVLW '3'
+0136   2???           00437     CALL LCD_DATA
+0137   303D           00438     MOVLW '='
+0138   2???           00439     CALL LCD_DATA
+0139   0008           00440     RETURN
+013A                  00441 PROB1
+                      00442 ;problem 2 : 9 - 2 =
+013A   3080           00443         MOVLW 0x80      ; Set DDRAM address to 0x00 (start of line 1)
+013B   2???           00444         CALL LCD_CMD
+013C   2???           00445         call DELAY_20MS
+013D   3039           00446     MOVLW '9'
+013E   2???           00447     CALL LCD_DATA
+013F   302D           00448     MOVLW '-'
+0140   2???           00449     CALL LCD_DATA
+0141   3032           00450     MOVLW '2'
+0142   2???           00451     CALL LCD_DATA
+0143   303D           00452     MOVLW '='
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0144   2???           00453     CALL LCD_DATA
+0145   0008           00454     RETURN
+                      00455     
+0146                  00456 PROB2   
+                      00457 ;problem 3 : 4 x 2 =   
+0146   3080           00458         MOVLW 0x80      ; Set DDRAM address to 0x00 (start of line 1)
+0147   2???           00459         CALL LCD_CMD
+0148   2???           00460         call DELAY_20MS
+0149   3034           00461     MOVLW '4'
+014A   2???           00462     CALL LCD_DATA
+014B   3078           00463     MOVLW 'x'
+014C   2???           00464     CALL LCD_DATA
+014D   3032           00465     MOVLW '2'
+014E   2???           00466     CALL LCD_DATA
+014F   303D           00467     MOVLW '='
+0150   2???           00468     CALL LCD_DATA
+0151   0008           00469     RETURN
+                      00470     
+0152                  00471 PROB3
+                      00472 ;problem 4 : 8 / 2 =
+0152   3080           00473         MOVLW 0x80      ; Set DDRAM address to 0x00 (start of line 1)
+0153   2???           00474         CALL LCD_CMD
+0154   2???           00475         call DELAY_20MS
+0155   3038           00476     MOVLW '8'
+0156   2???           00477     CALL LCD_DATA
+0157   302F           00478     MOVLW '/'
+0158   2???           00479     CALL LCD_DATA
+0159   3032           00480     MOVLW '2'
+015A   2???           00481     CALL LCD_DATA
+015B   303D           00482     MOVLW '='
+015C   2???           00483     CALL LCD_DATA
+015D   0008           00484     RETURN
+                      00485     
+015E                  00486 PROB4
+                      00487 ;problem 5 : 6 + 7 =
+015E   3080           00488         MOVLW 0x80      ; Set DDRAM address to 0x00 (start of line 1)
+015F   2???           00489         CALL LCD_CMD
+0160   2???           00490         call DELAY_20MS
+0161   3036           00491     MOVLW '6'
+0162   2???           00492     CALL LCD_DATA
+0163   302B           00493     MOVLW '+'
+0164   2???           00494     CALL LCD_DATA
+0165   3037           00495     MOVLW '7'
+0166   2???           00496     CALL LCD_DATA
+0167   303D           00497     MOVLW '='
+0168   2???           00498     CALL LCD_DATA
+0169   0008           00499     RETURN
+                      00500 
+                      00501         
+3F3A                  00502         END
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACKDT                             00000005
+ACKEN                             00000004
+ACKSTAT                           00000006
+ADCON0                            0000001F
+ADCON1                            0000009F
+ADCS0                             00000006
+ADCS1                             00000007
+ADCS2                             00000006
+ADDEN                             00000003
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+BCLIE                             00000003
+BCLIF                             00000003
+BF                                00000000
+BRGH                              00000002
+C                                 00000000
+C1INV                             00000004
+C1OUT                             00000006
+C2INV                             00000005
+C2OUT                             00000007
+CCP1CON                           00000017
+CCP1IE                            00000002
+CCP1IF                            00000002
+CCP1M0                            00000000
+CCP1M1                            00000001
+CCP1M2                            00000002
+CCP1M3                            00000003
+CCP1X                             00000005
+CCP1Y                             00000004
+CCP2CON                           0000001D
+CCP2IE                            00000000
+CCP2IF                            00000000
+CCP2M0                            00000000
+CCP2M1                            00000001
+CCP2M2                            00000002
+CCP2M3                            00000003
+CCP2X                             00000005
+CCP2Y                             00000004
+CCPR1                             00000015
+CCPR1H                            00000016
+CCPR1L                            00000015
+CCPR2                             0000001B
+CCPR2H                            0000001C
+CCPR2L                            0000001B
+CHECK_INPUT                       0000002F
+CHS0                              00000003
+CHS1                              00000004
+CHS2                              00000005
+CIS                               00000003
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+CKE                               00000006
+CKP                               00000004
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             0000009C
+CMIE                              00000006
+CMIF                              00000006
+CREN                              00000004
+CSRC                              00000007
+CVR0                              00000000
+CVR1                              00000001
+CVR2                              00000002
+CVR3                              00000003
+CVRCON                            0000009D
+CVREN                             00000007
+CVROE                             00000006
+CVRR                              00000005
+D                                 00000005
+DATA_ADDRESS                      00000005
+DC                                00000001
+DELAY_15SEC                       000000B6
+DELAY_1SEC                        000000B0
+DELAY_20MS                        000000AB
+DELAY_5MS                         000000A5
+DL1_LOOP                          000000B2
+DL5_LOOP                          000000A7
+D_A                               00000005
+D_NOT_A                           00000005
+EEADR                             0000010D
+EEADRH                            0000010F
+EECON1                            0000018C
+EECON2                            0000018D
+EEDATA                            0000010C
+EEDATH                            0000010E
+EEIE                              00000004
+EEIF                              00000004
+EEPGD                             00000007
+END_CHALLENGE                     0000004A
+F                                 00000001
+FERR                              00000002
+FSR                               00000004
+GCEN                              00000007
+GIE                               00000007
+GO                                00000002
+GO_DONE                           00000002
+GO_NOT_DONE                       00000002
+I2C_DATA                          00000005
+I2C_READ                          00000002
+I2C_START                         00000003
+I2C_STOP                          00000004
+IBF                               00000007
+IBOV                              00000005
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+INDF                              00000000
+INITIAL3                          00000005
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+ISR                               00000052
+LCD_CLEAR                         000000DE
+LCD_CMD                           000000CE
+LCD_DATA                          000000D6
+LCD_HARDLUCK                      00000117
+LCD_INIT                          000000C5
+LCD_WELCOME                       000000E5
+LCD_YOUWIN                        000000F4
+LOAD_ANSWER                       0000007B
+MAIN_LOOP                         0000001B
+NOT_A                             00000005
+NOT_ADDRESS                       00000005
+NOT_BO                            00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000002
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_RBPU                          00000007
+NOT_RC8                           00000006
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+NOT_TX8                           00000006
+NOT_W                             00000002
+NOT_WRITE                         00000002
+OBF                               00000006
+OERR                              00000001
+OPTION_REG                        00000081
+P                                 00000004
+PCFG0                             00000000
+PCFG1                             00000001
+PCFG2                             00000002
+PCFG3                             00000003
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PEN                               00000002
+PIE1                              0000008C
+PIE2                              0000008D
+PIR1                              0000000C
+PIR2                              0000000D
+PORTA                             00000005
+PORTB                             00000006
+PORTC                             00000007
+PORTD                             00000008
+PORTE                             00000009
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+PR2                               00000092
+PROB0                             0000012E
+PROB1                             0000013A
+PROB2                             00000146
+PROB3                             00000152
+PROB4                             0000015E
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSPIE                             00000007
+PSPIF                             00000007
+PSPMODE                           00000004
+R                                 00000002
+RA0                               00000000
+RA1                               00000001
+RA2                               00000002
+RA3                               00000003
+RA4                               00000004
+RA5                               00000005
+RANDOM_PROBLEM                    0000008C
+RB0                               00000000
+RB1                               00000001
+RB2                               00000002
+RB3                               00000003
+RB4                               00000004
+RB5                               00000005
+RB6                               00000006
+RB7                               00000007
+RBIE                              00000003
+RBIF                              00000000
+RC0                               00000000
+RC1                               00000001
+RC2                               00000002
+RC3                               00000003
+RC4                               00000004
+RC5                               00000005
+RC6                               00000006
+RC7                               00000007
+RC8_9                             00000006
+RC9                               00000006
+RCD8                              00000000
+RCEN                              00000003
+RCIE                              00000005
+RCIF                              00000005
+RCREG                             0000001A
+RCSTA                             00000018
+RD                                00000000
+RD0                               00000000
+RD1                               00000001
+RD2                               00000002
+RD3                               00000003
+RD4                               00000004
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+RD5                               00000005
+RD6                               00000006
+RD7                               00000007
+RE0                               00000000
+RE1                               00000001
+RE2                               00000002
+READ_WRITE                        00000002
+RP0                               00000005
+RP1                               00000006
+RSEN                              00000001
+RX9                               00000006
+RX9D                              00000000
+R_NOT_W                           00000002
+R_W                               00000002
+S                                 00000003
+SEN                               00000000
+SHOW                              00000065
+SHOW_PROBLEM                      00000067
+SHOW_TIME                         000000E1
+SMP                               00000007
+SPBRG                             00000099
+SPEN                              00000007
+SREN                              00000005
+SSPADD                            00000093
+SSPBUF                            00000013
+SSPCON                            00000014
+SSPCON2                           00000091
+SSPEN                             00000005
+SSPIE                             00000003
+SSPIF                             00000003
+SSPM0                             00000000
+SSPM1                             00000001
+SSPM2                             00000002
+SSPM3                             00000003
+SSPOV                             00000006
+SSPSTAT                           00000094
+START_CHALLENGE                   0000001E
+STATUS                            00000003
+SYNC                              00000004
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1INSYNC                          00000002
+T1OSCEN                           00000003
+T1SYNC                            00000002
+T2CKPS0                           00000000
+T2CKPS1                           00000001
+T2CON                             00000012
+TIMER0_INIT                       00000082
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE 16
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TIMER1_INIT                       00000096
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TMR2                              00000011
+TMR2IE                            00000001
+TMR2IF                            00000001
+TMR2ON                            00000002
+TOUTPS0                           00000003
+TOUTPS1                           00000004
+TOUTPS2                           00000005
+TOUTPS3                           00000006
+TRISA                             00000085
+TRISA0                            00000000
+TRISA1                            00000001
+TRISA2                            00000002
+TRISA3                            00000003
+TRISA4                            00000004
+TRISA5                            00000005
+TRISB                             00000086
+TRISB0                            00000000
+TRISB1                            00000001
+TRISB2                            00000002
+TRISB3                            00000003
+TRISB4                            00000004
+TRISB5                            00000005
+TRISB6                            00000006
+TRISB7                            00000007
+TRISC                             00000087
+TRISC0                            00000000
+TRISC1                            00000001
+TRISC2                            00000002
+TRISC3                            00000003
+TRISC4                            00000004
+TRISC5                            00000005
+TRISC6                            00000006
+TRISC7                            00000007
+TRISD                             00000088
+TRISD0                            00000000
+TRISD1                            00000001
+TRISD2                            00000002
+TRISD3                            00000003
+TRISD4                            00000004
+TRISD5                            00000005
+TRISD6                            00000006
+TRISD7                            00000007
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE 17
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TRISE                             00000089
+TRISE0                            00000000
+TRISE1                            00000001
+TRISE2                            00000002
+TRMT                              00000001
+TX8_9                             00000006
+TX9                               00000006
+TX9D                              00000000
+TXD8                              00000000
+TXEN                              00000005
+TXIE                              00000004
+TXIF                              00000004
+TXREG                             00000019
+TXSTA                             00000098
+UA                                00000001
+W                                 00000000
+WAIT_LOOP                         00000028
+WCOL                              00000007
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+WRONG                             00000042
+Z                                 00000002
+_.org_1_001C                      0000001C
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_ALL                           00001FFF
+_CP_OFF                           00003FFF
+_CP_ON                            00001FFF
+_DEBUG_OFF                        00003FFF
+_DEBUG_ON                         000037FF
+_DEVID1                           00002006
+_FOSC_EXTRC                       00003FFF
+_FOSC_HS                          00003FFE
+_FOSC_LP                          00003FFC
+_FOSC_XT                          00003FFD
+_HS_OSC                           00003FFE
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_LP_OSC                           00003FFC
+_LVP_OFF                          00003F7F
+_LVP_ON                           00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDTE_OFF                         00003FFB
+MPASM  5.51                    CHALLENGE3.ASM   5-26-2025  19:28:41         PAGE 18
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_WRT_1FOURTH                      00003BFF
+_WRT_256                          00003DFF
+_WRT_HALF                         000039FF
+_WRT_OFF                          00003FFF
+_XT_OSC                           00003FFD
+__16F877A                         00000001
+__DEBUG                           1
+countdown                         00000020
+countlookup                       0000006E
+current_answer                    00000021
+delay1                            00000024
+delay2                            00000025
+problem_index                     00000022
+switch_input                      00000023
+
+Errors   :     1
+Warnings :     5 reported,     0 suppressed
+Messages :     9 reported,     0 suppressed
+
+

@@ -1,0 +1,136 @@
+MPLINK 4.49, Linker
+Linker Map File - Created Thu May 29 21:52:15 2025
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x0005e6
+      .config_2007_CH_1.O       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x0002f6      
+                            0x002007    0x002007      
+            757 out of 8454 program addresses used, program memory utilization is 8%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+               CHALLENGE2   0x0000b0    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+               CHALLENGE3   0x0001bb    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              CHECK_INPUT   0x0001e5    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+       CHECK_PRIME_NUMBER   0x000052    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+               DELAY_1SEC   0x0001a1    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              DELAY_200MS   0x00021c    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+               DELAY_20MS   0x0001af    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+               DELAY_5SEC   0x0001b4    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                  DISPLAY   0x000088    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+            END_CHALLENGE   0x000216    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    FLASH   0x000201    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                      ISR   0x000229    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                  Initial   0x000162    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                LCD_CLEAR   0x00010b    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+             LCD_HARDLUCK   0x0002a4    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                 LCD_INIT   0x000101    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              LCD_WELCOME   0x000265    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+               LCD_YOUWIN   0x00027e    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              LOAD_ANSWER   0x0000a9    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                     LOOP   0x00019b    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    LOOP2   0x0001a7    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    LOOP5   0x000222    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                     MAIN   0x000005    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                Main_Loop   0x0000cb    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    PRIME   0x000078    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    PROB0   0x0002bb    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    PROB1   0x0002c7    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    PROB2   0x0002d3    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    PROB3   0x0002df    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    PROB4   0x0002eb    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+           RANDOM_PROBLEM   0x000248    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                     SHOW   0x00023c    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+             SHOW_PROBLEM   0x00008b    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                SHOW_TIME   0x000261    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+          START_CHALLENGE   0x0001d4    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              TIMER0_INIT   0x00023e    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              TIMER1_INIT   0x000252    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                WAIT_LOOP   0x0001de    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    WRONG   0x00020e    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                  correct   0x00010e    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              countlookup   0x000092    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    delay   0x000197    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                editValue   0x0000f8    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    exist   0x0000ff    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                send_char   0x00017f    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                 send_cmd   0x00018b    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                  soClose   0x00013a    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                testValue   0x0000db    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                     true   0x0000f2    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                     wait   0x00004b    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    wait2   0x0000d2    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     MAIN   0x000005    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                     wait   0x00004b    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+       CHECK_PRIME_NUMBER   0x000052    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    PRIME   0x000078    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                  DISPLAY   0x000088    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+             SHOW_PROBLEM   0x00008b    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              countlookup   0x000092    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              LOAD_ANSWER   0x0000a9    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+               CHALLENGE2   0x0000b0    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                Main_Loop   0x0000cb    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    wait2   0x0000d2    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                testValue   0x0000db    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                     true   0x0000f2    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                editValue   0x0000f8    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    exist   0x0000ff    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                 LCD_INIT   0x000101    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                LCD_CLEAR   0x00010b    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                  correct   0x00010e    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                  soClose   0x00013a    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                  Initial   0x000162    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                send_char   0x00017f    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                 send_cmd   0x00018b    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    delay   0x000197    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                     LOOP   0x00019b    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+               DELAY_1SEC   0x0001a1    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    LOOP2   0x0001a7    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+               DELAY_20MS   0x0001af    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+               DELAY_5SEC   0x0001b4    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+               CHALLENGE3   0x0001bb    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+          START_CHALLENGE   0x0001d4    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                WAIT_LOOP   0x0001de    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              CHECK_INPUT   0x0001e5    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    FLASH   0x000201    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    WRONG   0x00020e    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+            END_CHALLENGE   0x000216    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              DELAY_200MS   0x00021c    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    LOOP5   0x000222    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                      ISR   0x000229    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                     SHOW   0x00023c    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              TIMER0_INIT   0x00023e    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+           RANDOM_PROBLEM   0x000248    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              TIMER1_INIT   0x000252    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                SHOW_TIME   0x000261    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+              LCD_WELCOME   0x000265    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+               LCD_YOUWIN   0x00027e    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+             LCD_HARDLUCK   0x0002a4    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    PROB0   0x0002bb    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    PROB1   0x0002c7    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    PROB2   0x0002d3    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    PROB3   0x0002df    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+                    PROB4   0x0002eb    program     static C:\Users\ASUS\Desktop\university-projects\lab-embedded-proj\ALL-CHALLENGES\CH_1.asm
+
+
